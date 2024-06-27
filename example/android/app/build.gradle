@@ -24,6 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "org.mindwave.mindwave_mobile2_example"
+
     compileSdkVersion 34
     ndkVersion "26.1.10909125"
 

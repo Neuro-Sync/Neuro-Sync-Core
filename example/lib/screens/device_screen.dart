@@ -6,6 +6,7 @@ import 'package:mindwave_mobile2/algo_band_power.dart';
 import 'package:mindwave_mobile2/enums/algo_state_reason.dart';
 import 'package:mindwave_mobile2/band_power.dart';
 import 'package:mindwave_mobile2/enums/headset_state.dart';
+import 'package:mindwave_mobile2/enums/direction.dart';
 import 'package:mindwave_mobile2/mindwave_mobile2.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -34,9 +35,14 @@ class _DeviceScreenState extends State<DeviceScreen> {
   bool algoDataListen = true;
   bool rawChartView = true;
 
+  int _selectedIndex = 1;
+  Direction currentButton = Direction.stop;
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
+    startButtonsCycle();
     _headsetStateSubscription = headset.onStateChange().listen((state) {
       _headsetState = state;
       if (state == HeadsetState.DISCONNECTED) {
@@ -56,6 +62,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     });
     _aiDetectedMovementSubscription =
         headset.onAIDetectedMovement().listen((value) {
+      handleAction();
       showSnackBarPopup(
           context: context,
           text: "AI Detected Movement $value",
@@ -87,6 +94,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
             children: [
               buildStateWidget(context),
               const Divider(height: 20, color: Colors.black),
+              Text("Current Button: ${currentButton.name}",
+                  style: const TextStyle(fontSize: 18)),
+              buildButtonsLayout(context),
+              ElevatedButton(
+                  onPressed: handleAction, child: const Text("Action")),
               buildSwitchStreamWidget(context),
               buildSwitchAlgoWidget(context),
               buildSwitchRawViewWidget(context),
@@ -103,6 +115,75 @@ class _DeviceScreenState extends State<DeviceScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void startButtonsCycle() {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      setState(() {
+        _selectedIndex = (_selectedIndex + 1) % 4;
+        if (_selectedIndex == 0) {
+          _selectedIndex = 1;
+        }
+      });
+    });
+  }
+
+  void handleAction() {
+    if (currentButton != Direction.stop) {
+      currentButton = Direction.stop;
+      _selectedIndex = 1;
+      startButtonsCycle();
+      debugPrint("Action: ${currentButton.name}, currentButton != stop");
+    } else {
+      debugPrint("Action: ${currentButton.name}, currentButton == stop");
+      _timer?.cancel();
+      currentButton = Direction.fromValue(_selectedIndex);
+      _selectedIndex = 0;
+    }
+    setState(() {
+      headset.sendDirection(currentButton);
+    });
+  }
+
+  Widget buildButtonsLayout(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 80), // Empty space for alignment
+            _buildButton('Forward', 2),
+            const SizedBox(width: 80), // Empty space for alignment
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildButton('Left', 1),
+            _buildButton('Stop', 0),
+            _buildButton('Right', 3),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildButton(String label, int index) {
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: _selectedIndex == index ? Colors.red : Colors.transparent,
+          width: 3.0,
+        ),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: ElevatedButton(
+        onPressed: () {},
+        child: Text(label),
       ),
     );
   }

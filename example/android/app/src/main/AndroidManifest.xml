@@ -23,6 +23,10 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+
+      </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -46,4 +50,12 @@
 
     <!-- legacy for Android 9 or lower -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
+
+    <uses-feature android:name="android.hardware.usb.accessory" />
+
+  <uses-feature android:name="android.hardware.usb.host" />
+
+  <uses-permission android:name="android.permission.USB_PERMISSION" />
+
+  <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

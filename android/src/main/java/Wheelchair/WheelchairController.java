@@ -4,15 +4,17 @@ import Wheelchair.events.Direction;
 import Wheelchair.events.DirectionEvent;
 import Wheelchair.events.DirectionEventHandler;
 import Wheelchair.events.IDirectionEventListener;
+import android.content.Context;
 import android.hardware.usb.UsbManager;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import java.io.IOException;
 
 public class WheelchairController {
 
   private final DirectionEventHandler directionEventHandler = new DirectionEventHandler();
 
-  public WheelchairController(UsbManager usbManager) throws IOException {
-    WheelchairManager wheelchairManager = new WheelchairManager(usbManager);
+  public WheelchairController(UsbManager usbManager, UsbSerialDriver driver) throws IOException {
+    WheelchairManager wheelchairManager = new WheelchairManager(usbManager, driver);
     this.directionEventHandler.addListener(wheelchairManager);
   }
 

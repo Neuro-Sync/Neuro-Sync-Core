@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'algo_band_power.dart';
 import 'enums/algo_state_reason.dart';
+import 'enums/direction.dart';
 import 'band_power.dart';
 import 'enums/headset_state.dart';
 
@@ -34,6 +35,10 @@ class MindwaveMobile2 {
         .invokeMethod("init", {'deviceID': deviceID});
   }
 
+  Future<bool> usbInit() async {
+    return await _connectionChannel.invokeMethod("usbInit");
+  }
+
   /// Initiates a connection to the MindWave Mobile 2 headset.
   ///
   /// Returns `true` if the connection is successful, `false` otherwise.
@@ -48,8 +53,15 @@ class MindwaveMobile2 {
     return await _connectionChannel.invokeMethod("disconnect");
   }
 
+  Future<bool> sendDirection(Direction direction) async {
+    return await _directionChannel
+        .invokeMethod("sendDirection", {'direction': direction.index});
+  }
+
   final MethodChannel _connectionChannel =
       const MethodChannel("$NAMESPACE/ConnectionChannel");
+  final MethodChannel _directionChannel =
+      const MethodChannel("$NAMESPACE/DirectionChannel");
   final EventChannel _headsetStateChannel =
       const EventChannel("$NAMESPACE/HeadsetState");
   final EventChannel _aiDetectedMovementChannel =

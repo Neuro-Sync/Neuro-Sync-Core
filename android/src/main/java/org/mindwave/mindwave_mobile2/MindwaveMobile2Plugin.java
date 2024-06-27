@@ -7,6 +7,7 @@ import ai.events.aiDetectedMovement.IAiDetectedMovementEventListener;
 import android.content.Context;
 import android.bluetooth.BluetoothManager;
 import android.hardware.usb.UsbManager;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import android.os.Handler;
 import android.os.Looper;
@@ -54,12 +55,14 @@ import java.util.HashMap;
 
 public class MindwaveMobile2Plugin implements FlutterPlugin {
 
+  Context context;
   private static final String NAMESPACE = "mindwave_mobile2";
   private final Handler uiThreadHandler = new Handler(Looper.getMainLooper());
   private WrapperCore coreController;
   private BluetoothManager _BluetoothManager;
   private UsbManager _UsbManager;
   private MethodChannel _connectionChannel;
+  private MethodChannel _directionChanel;
   private EventChannel _headsetStateChannel;
   private EventChannel _aiDetectedMovementChannel;
   private EventChannel _signalQualityChannel;
@@ -92,6 +95,7 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
 
   private final StreamHandler aiDetectedMovementChannelHandler = createAiDetectedMovementChannelHandler();
   private final MethodCallHandler connectionChannelHandler = createConnectionChannelHandler();
+  private final MethodCallHandler directionChannelHandler = createDirectionChannelHandler();
   private final StreamHandler headsetStateChannelHandler = createHeadsetStateChannelHandler();
   private final StreamHandler signalQualityChannelHandler = createSignalQualityChannelHandler();
   private final StreamHandler attentionChannelHandler = createAttentionChannelHandler();
@@ -112,9 +116,13 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
         .getSystemService(Context.BLUETOOTH_SERVICE);
     _UsbManager = (UsbManager) flutterPluginBinding.getApplicationContext()
         .getSystemService(Context.USB_SERVICE);
+    context = flutterPluginBinding.getApplicationContext();
     _connectionChannel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(),
         NAMESPACE + "/ConnectionChannel");
     _connectionChannel.setMethodCallHandler(connectionChannelHandler);
+    _directionChanel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(),
+        NAMESPACE + "/DirectionChannel");
+    _directionChanel.setMethodCallHandler(directionChannelHandler);
     _aiDetectedMovementChannel = new EventChannel(flutterPluginBinding.getBinaryMessenger(),
         NAMESPACE + "/AIDetectedMovement");
     _aiDetectedMovementChannel.setStreamHandler(aiDetectedMovementChannelHandler);
@@ -162,6 +170,7 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
       coreController.headsetDisconnect();
     }
     _connectionChannel.setMethodCallHandler(null);
+    _directionChanel.setMethodCallHandler(null);
     _headsetStateChannel.setStreamHandler(null);
     _aiDetectedMovementChannel.setStreamHandler(null);
     _signalQualityChannel.setStreamHandler(null);
@@ -463,12 +472,15 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
         if (call.method.equals("init")) {
           String deviceId = call.argument("deviceID");
           try {
-            coreController = new WrapperCore(_BluetoothManager, deviceId, _UsbManager);
+            coreController = new WrapperCore(_BluetoothManager, deviceId, _UsbManager, context);
           } catch (IOException e) {
 
             throw new RuntimeException(e);
           }
           result.success(true);
+        } else if (call.method.equals("usbInit")) {
+          Log.i("PluginNative", "Init USB");
+          WrapperCore.initPremission(_UsbManager, context);
         } else if (call.method.equals("connect")) {
           coreController.headsetConnect();
           result.success(true);
@@ -478,6 +490,29 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
         } else {
           result.notImplemented();
         }
+      }
+    };
+  }
+
+  private MethodCallHandler createDirectionChannelHandler() {
+    return new MethodCallHandler() {
+      @Override
+      public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+        if (call.method.equals("sendDirection")) {
+          int direction = call.argument("direction");
+          switch (direction) {
+            case 0 -> coreController.makeWheelchairStop();
+            case 1 -> coreController.makeWheelchairGoLeft();
+            case 2 -> coreController.makeWheelchairGoForward();
+            case 3 -> coreController.makeWheelchairGoRight();
+            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
+          }
+          Log.i("PluginNative", "Direction Sent to Wheelchair with value: " + direction);
+          result.success(true);
+        } else {
+          result.notImplemented();
+        }
+
       }
     };
   }

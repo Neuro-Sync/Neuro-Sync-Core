@@ -23,6 +23,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   @override
   void initState() {
+    // MindwaveMobile2.instance.usbInit();
     super.initState();
 
     _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
@@ -137,6 +138,9 @@ class _ScanScreenState extends State<ScanScreen> {
         onRefresh: onRefresh,
         child: ListView(
           children: <Widget>[
+            ElevatedButton(
+                onPressed: () => MindwaveMobile2.instance.usbInit(),
+                child: const Text("USB Init")),
             ..._buildScanResultTiles(context),
           ],
         ),
