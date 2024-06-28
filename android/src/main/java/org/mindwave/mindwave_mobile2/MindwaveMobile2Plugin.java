@@ -1,9 +1,5 @@
 package org.mindwave.mindwave_mobile2;
 
-import Wheelchair.WheelchairController;
-import ai.ModelController;
-import ai.events.aiDetectedMovement.AiDetectedMovementEvent;
-import ai.events.aiDetectedMovement.IAiDetectedMovementEventListener;
 import android.content.Context;
 import android.bluetooth.BluetoothManager;
 import android.hardware.usb.UsbManager;
@@ -480,7 +476,8 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
           result.success(true);
         } else if (call.method.equals("usbInit")) {
           Log.i("PluginNative", "Init USB");
-          WrapperCore.initPremission(_UsbManager, context);
+          boolean res = WrapperCore.initPermission(_UsbManager, context);
+          result.success(res);
         } else if (call.method.equals("connect")) {
           coreController.headsetConnect();
           result.success(true);
@@ -500,15 +497,20 @@ public class MindwaveMobile2Plugin implements FlutterPlugin {
       public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         if (call.method.equals("sendDirection")) {
           int direction = call.argument("direction");
-          switch (direction) {
-            case 0 -> coreController.makeWheelchairStop();
-            case 1 -> coreController.makeWheelchairGoLeft();
-            case 2 -> coreController.makeWheelchairGoForward();
-            case 3 -> coreController.makeWheelchairGoRight();
-            default -> throw new IllegalArgumentException("Invalid direction: " + direction);
+          try {
+            switch (direction) {
+              case 0 -> coreController.makeWheelchairStop();
+              case 1 -> coreController.makeWheelchairGoLeft();
+              case 2 -> coreController.makeWheelchairGoForward();
+              case 3 -> coreController.makeWheelchairGoRight();
+              default -> throw new IllegalArgumentException("Invalid direction: " + direction);
+            }
+            Log.i("PluginNative", "Direction Sent to Wheelchair with value: " + direction);
+            result.success(true);
+          } catch (Exception e) {
+            Log.e("PluginNative", "Error sending direction to wheelchair: " + e.getMessage());
+            result.success(false);
           }
-          Log.i("PluginNative", "Direction Sent to Wheelchair with value: " + direction);
-          result.success(true);
         } else {
           result.notImplemented();
         }

@@ -38,12 +38,12 @@ public class WrapperCore {
   //FIXME: This field should be made as final []
   private WheelchairController wheelchairController = null;
 
-  public static void initPremission(UsbManager usbManager, Context context) {
+  public static boolean initPermission(UsbManager usbManager, Context context) {
     List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber()
         .findAllDrivers(usbManager);
     Log.i("HARDWARE", "Available Drivers: " + availableDrivers.size());
     if (availableDrivers.isEmpty()) {
-      return;
+      return false;
     }
 
     Map<String, UsbDevice> diverList = usbManager.getDeviceList();
@@ -58,7 +58,7 @@ public class WrapperCore {
     }
 
     driver = availableDrivers.get(0);
-
+    return true;
   }
 
 

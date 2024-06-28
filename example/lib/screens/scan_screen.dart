@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:mindwave_mobile2/enums/direction.dart';
 import 'package:mindwave_mobile2/mindwave_mobile2.dart';
 
 import '../util/snackbar_popup.dart';
@@ -139,13 +140,124 @@ class _ScanScreenState extends State<ScanScreen> {
         child: ListView(
           children: <Widget>[
             ElevatedButton(
-                onPressed: () => MindwaveMobile2.instance.usbInit(),
+                onPressed: () async {
+                  bool res = await MindwaveMobile2.instance.usbInit();
+                  if (!context.mounted) return;
+                  if (res) {
+                    showSnackBarPopup(
+                        context: context,
+                        text: "USB Init Success",
+                        color: Colors.green);
+                  } else {
+                    showSnackBarPopup(
+                        context: context,
+                        text: "No USB Device Found",
+                        color: Colors.red);
+                  }
+                },
                 child: const Text("USB Init")),
+            buildControlButtons(),
             ..._buildScanResultTiles(context),
           ],
         ),
       ),
       floatingActionButton: buildScanButton(context),
+    );
+  }
+
+  Widget buildControlButtons() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(width: 80), // Empty space for alignment
+            ElevatedButton(
+              onPressed: () async {
+                bool res = await MindwaveMobile2.instance
+                    .sendDirection(Direction.forward);
+                if (!context.mounted) return;
+                if (res) {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Forward Command Sent",
+                      color: Colors.green);
+                } else {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Failed to Send Forward Command",
+                      color: Colors.red);
+                }
+              },
+              child: const Text("Forward"),
+            ),
+            const SizedBox(width: 80), // Empty space for alignment
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                bool res = await MindwaveMobile2.instance
+                    .sendDirection(Direction.left);
+                if (!context.mounted) return;
+                if (res) {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Left Command Sent",
+                      color: Colors.green);
+                } else {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Failed to Send Left Command",
+                      color: Colors.red);
+                }
+              },
+              child: const Text("Left"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                bool res = await MindwaveMobile2.instance
+                    .sendDirection(Direction.stop);
+                if (!context.mounted) return;
+                if (res) {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Stop Command Sent",
+                      color: Colors.green);
+                } else {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Failed to Send Stop Command",
+                      color: Colors.red);
+                }
+              },
+              child: const Text("Stop"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                bool res = await MindwaveMobile2.instance
+                    .sendDirection(Direction.right);
+                if (!context.mounted) return;
+                if (res) {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Right Command Sent",
+                      color: Colors.green);
+                } else {
+                  showSnackBarPopup(
+                      context: context,
+                      text: "Failed to Send Right Command",
+                      color: Colors.red);
+                }
+              },
+              child: const Text("Right"),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
