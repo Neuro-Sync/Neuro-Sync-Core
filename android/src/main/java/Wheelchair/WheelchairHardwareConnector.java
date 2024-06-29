@@ -77,9 +77,8 @@ public class WheelchairHardwareConnector {
 
   private void getBtAccess(UsbDevice device, UsbManager manager, Context context) {
     // Create a PendingIntent for USB permission request
-    PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0,
-        new Intent(ACTION_USB_PERMISSION),
-        PendingIntent.FLAG_IMMUTABLE);
+    PendingIntent permissionIntent = PendingIntent.getBroadcast(context,   0,
+        new Intent(ACTION_USB_PERMISSION), 0);
 
     // Create a BroadcastReceiver to handle USB permission
     BroadcastReceiver usbReceiver = new BroadcastReceiver() {
@@ -114,7 +113,7 @@ public class WheelchairHardwareConnector {
     // Register the BroadcastReceiver to handle USB permission
     IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY); // Set priority to high
-    context.registerReceiver(usbReceiver, filter); // Add permission flag
+    context.registerReceiver(usbReceiver, filter,context.RECEIVER_NOT_EXPORTED); // Add permission flag
 //    if (VERSION.SDK_INT >= VERSION_CODES.O) {
 //    }
     // Request USB permission for the device

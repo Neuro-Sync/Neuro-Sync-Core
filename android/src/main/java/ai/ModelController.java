@@ -21,6 +21,7 @@ public class ModelController implements IStreamRawDataEventListener,
     this.model = new Model(remoteModelUrl);
   }
 
+
   @Override
   public void onSignalQualityUpdate(StreamSignalQualityEvent event) {
     this.lastSignalQuality = event.getSignalQualityData().qualityLevel();

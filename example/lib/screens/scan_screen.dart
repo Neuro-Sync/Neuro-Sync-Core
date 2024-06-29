@@ -54,6 +54,8 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Future onScanPressed() async {
     try {
+      showSnackBarPopup(
+          context: context, text: "Scanning started", color: Colors.green);
       await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
     } catch (e) {
       if (context.mounted) {
@@ -79,6 +81,7 @@ class _ScanScreenState extends State<ScanScreen> {
 
   void onOpenPressed(BluetoothDevice device) async {
     try {
+      print(device.remoteId.str);
       await MindwaveMobile2.instance.init(device.remoteId.str);
       onStopPressed();
     } catch (e) {
@@ -157,6 +160,19 @@ class _ScanScreenState extends State<ScanScreen> {
                 },
                 child: const Text("USB Init")),
             buildControlButtons(),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       MindwaveMobile2.instance.init("A4:DA:32:6F:4F:C7");
+            //       MindwaveMobile2.instance.onStateChange().listen((state) {
+            //         print(state);
+            //       });
+            //     },
+            //     child: Text("Init")),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       MindwaveMobile2.instance.connect();
+            //     },
+            //     child: Text("Init")),
             ..._buildScanResultTiles(context),
           ],
         ),

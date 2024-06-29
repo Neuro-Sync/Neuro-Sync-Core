@@ -30,7 +30,7 @@ public class WrapperCore {
   private static UsbSerialDriver driver = null;
   private final HeadsetController headsetController;
   private final ControlManager controlManager;
-  private final ModelController modelController;
+  private  ModelController modelController;
   //FIXME: put the correct PROD url
   private final String modelUrl = "https://learny-v1.onrender.com/api/v1/downloadModel";
 
@@ -101,7 +101,7 @@ public class WrapperCore {
     // Register the BroadcastReceiver to handle USB permission
     IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
     filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY); // Set priority to high
-    context.registerReceiver(usbReceiver, filter); // Add permission flag
+    context.registerReceiver(usbReceiver, filter, context.RECEIVER_NOT_EXPORTED); // Add permission flag
 //    if (VERSION.SDK_INT >= VERSION_CODES.O) {
 //    }
     // Request USB permission for the device
