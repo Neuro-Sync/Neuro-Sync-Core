@@ -17,29 +17,17 @@ public class WrapperCore {
   private final HeadsetController headsetController;
   private final ControlManager controlManager;
   private final ModelController modelController;
-  //FIXME: put the correct PROD url
+  private final WheelchairController wheelchairController;
   private final String modelUrl = "https://learny-v1.onrender.com/api/v1/downloadModel";
 
   //FIXME: This field is not initialized with null this just to mimic the real implementation []
   //FIXME: This field should be made as final []
   private WheelchairController wheelchairController = null;
 
-  //NOTE: This constructor is not the production one it is for testing purposes only
-  public WrapperCore() {
-    this.controlManager = new ControlManager();
-    this.headsetController = new HeadsetController();
-    this.modelController = new ModelController(modelUrl);
-//    this.wheelchairController = new WheelchairController();
-    this.headsetController.addEventListener(controlManager.getBlinkManager());
-    this.headsetController.addEventListener(this.modelController);
-  }
-
-  //FIXME: This constructor is missing the serial usb connection initialization [DONE]
-  public WrapperCore(BluetoothManager bluetoothManager, String macAddress, UsbManager usbManager, Context context)
+  public WrapperCore(BluetoothManager bluetoothManager, String macAddress, UsbManager usbManager)
       throws IOException {
     this.controlManager = new ControlManager();
-    this.wheelchairController = new WheelchairController(usbManager, context);
-    //FIXME: put the correct PROD url
+    this.wheelchairController = new WheelchairController(usbManager);
     this.modelController = new ModelController(this.modelUrl);
     this.modelController.addListener(this.controlManager.getActionManager());
     this.headsetController = new HeadsetController(bluetoothManager, macAddress);
@@ -79,20 +67,4 @@ public class WrapperCore {
   public void makeWheelchairStop() {
     wheelchairController.stop();
   }
-
-  //FIXME: This method is for testing purposes only
-  public HeadsetController getMindWaveMobile2() {
-    return headsetController;
-  }
-
-  //FIXME: This method is for testing purposes only
-  public ControlManager getControlManager() {
-    return controlManager;
-  }
-
-  //FIXME: This method is for testing purposes only
-  public ModelController getModelController() {
-    return modelController;
-  }
-
 }
