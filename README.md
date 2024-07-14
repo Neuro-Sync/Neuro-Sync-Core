@@ -159,4 +159,3 @@ This project is licensed under the MIT License - see the [LICENSE](https://choos
 ### Acknowledgements
 
 - Neurosky for their Mindwave2 headset and SDK.
-- TensorFlow (or applicable AI framework) for the AI model integration.
