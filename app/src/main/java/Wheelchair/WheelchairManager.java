@@ -2,15 +2,17 @@ package Wheelchair;
 
 import Wheelchair.events.DirectionEvent;
 import Wheelchair.events.IDirectionEventListener;
+import android.content.Context;
 import android.hardware.usb.UsbManager;
 import java.io.IOException;
 
 public class WheelchairManager implements IDirectionEventListener {
 
-  private final WheelchairHardwareConnector wheelchairHardwareConnector;
+  private WheelchairHardwareConnector wheelchairHardwareConnector = null;
 
-  public WheelchairManager(UsbManager usbManager) throws IOException {
-    this.wheelchairHardwareConnector = new WheelchairHardwareConnector(usbManager);
+  public WheelchairManager(UsbManager usbManager, Context context) throws IOException {
+    this.wheelchairHardwareConnector = new WheelchairHardwareConnector(usbManager, context);
+//    this. = new WheelchairHardwareConnector(usbManager, context);
   }
 
   public void onDirectionEvent(DirectionEvent event) {
