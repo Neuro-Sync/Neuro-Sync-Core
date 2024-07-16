@@ -48,7 +48,7 @@
    - Ensure the SDK is correctly referenced in your project.
 
 2. **Configure AI Model:**
-   - Place your trained AI model in the designated directory.
+   - Place your trained AI model in the designated directory (or you can use our default model).
    - Update the model URL in `WrapperCore.java`.
 
 ### Usage
@@ -67,7 +67,7 @@
 
 ## Main Entry Point
 
-Below is the main entry point code for the `WrapperCore` interface, along with method descriptions and their respective behaviors.
+Below is the main entry point code for the `WrapperCore` interface, along with method descriptions and their respective behaviours.
 
 ```java
 package com.example.wrappercore;
